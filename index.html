@@ -1,16 +1,1171 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>幻想弾幕ブレイカーズ | 公式サイト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14121c;
+    --bg-panel: #1c1928;
+    --bg-panel-2: #221e33;
+    --gold: #c9a24b;
+    --gold-soft: #ad8a48;
+    --crimson: #8b3040;
+    --text: #ede7da;
+    --text-dim: #a79e8f;
+    --line: #3a3550;
+    --line-soft: #2a2638;
+    --shadow: 0 18px 40px rgba(0,0,0,0.45);
+  }
 
-    <title>幻想弾幕ブレイカーズ</title>
-    <link rel ="stylesheet" href='style.css'>
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(139,48,64,0.18), transparent 60%),
+      radial-gradient(ellipse 800px 600px at 100% 0%, rgba(201,162,75,0.10), transparent 55%);
+    color: var(--text);
+    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .brand{
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  a{ color: inherit; text-decoration: none; }
+  button{ font-family: inherit; }
+
+  :focus-visible{
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+    html{ scroll-behavior: auto; }
+  }
+
+  /* ---------- layout shell ---------- */
+  .wrap{
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  header.site{
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(20,18,28,0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  header.site .wrap{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .brand{
+    font-size: 1.25rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .brand .mark{
+    width: 22px; height: 30px;
+    border: 1.5px solid var(--gold);
+    border-radius: 3px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .brand .mark::before{
+    content:"";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--gold-soft);
+    transform: rotate(45deg);
+    opacity: 0.7;
+  }
+
+  nav.main{
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  nav.main a{
+    font-size: 0.92rem;
+    color: var(--text-dim);
+    padding: 8px 14px;
+    border-radius: 3px;
+    position: relative;
+    transition: color 0.2s ease;
+  }
+  nav.main a:hover{ color: var(--text); }
+  nav.main a.active{ color: var(--gold); }
+  nav.main a.active::after{
+    content:"";
+    position: absolute;
+    left: 14px; right: 14px; bottom: 2px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  main{ min-height: 70vh; }
+
+  .page{ display: none; animation: fadein 0.35s ease; }
+  .page.visible{ display: block; }
+  @keyframes fadein{
+    from{ opacity: 0; transform: translateY(6px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- home ---------- */
+  .hero{
+    padding: 96px 0 64px;
+    text-align: center;
+    position: relative;
+  }
+  .hero .eyebrow-art{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 26px;
+  }
+  .hero .eyebrow-art span{
+    width: 7px; height: 7px;
+    border: 1px solid var(--gold-soft);
+    transform: rotate(45deg);
+    opacity: 0.8;
+  }
+  .hero h1{
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    margin: 0 0 18px;
+    color: var(--text);
+  }
+  .hero h1 em{
+    font-style: normal;
+    color: #f00;
+  }
+  .hero p.lead{
+    max-width: 560px;
+    margin: 0 auto;
+    color: var(--text-dim);
+    font-size: 1.05rem;
+  }
+
+  .tiles{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    padding: 20px 0 90px;
+  }
+  @media (max-width: 760px){
+    .tiles{ grid-template-columns: repeat(2, 1fr); }
+  }
+  .tile{
+    display: block;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 30px 20px;
+    text-align: left;
+    position: relative;
+    transition: border-color 0.25s ease, transform 0.25s ease;
+  }
+  .tile:hover{
+    border-color: var(--gold-soft);
+    transform: translateY(-3px);
+  }
+  .tile .num{
+    font-family: 'Shippori Mincho', serif;
+    font-size: 0.8rem;
+    color: var(--gold-soft);
+    display: block;
+    margin-bottom: 14px;
+  }
+  .tile h3{
+    margin: 0 0 8px;
+    font-size: 1.15rem;
+    color: var(--text);
+  }
+  .tile p{
+    margin: 0;
+    font-size: 0.86rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .tile .corner{
+    position: absolute; top: 10px; right: 10px;
+    width: 8px; height: 8px;
+    border-top: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+  }
+
+  /* ---------- generic page header ---------- */
+  .page-head{
+    padding: 64px 0 40px;
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: 48px;
+  }
+  .page-head .tag{
+    color: var(--gold-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    margin: 0 0 12px;
+  }
+  .page-head h2{
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0 0 14px;
+  }
+  .page-head p{
+    color: var(--text-dim);
+    max-width: 620px;
+    margin: 0;
+  }
+  .page > .wrap{ padding-bottom: 100px; }
+
+  /* ---------- team page ---------- */
+  .team-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px;
+  }
+  @media (max-width: 700px){ .team-grid{ grid-template-columns: 1fr; } }
+  .member{
+    display: flex;
+    gap: 18px;
+    padding: 24px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .member .avatar{
+    width: 64px; height: 64px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(160deg, var(--crimson), var(--bg-panel-2));
+    border: 1px solid var(--gold-soft);
+  }
+  .member h3{
+    margin: 0 0 2px;
+    font-size: 1.05rem;
+  }
+  .member .role{
+    color: var(--gold-soft);
+    font-size: 0.8rem;
+    margin: 0 0 10px;
+  }
+  .member p.bio{
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+
+  /* ---------- rules page ---------- */
+  .rule-block{
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .rule-block:last-child{ border-bottom: none; }
+  .rule-block h3{
+    font-size: 1.2rem;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .rule-block h3 .idx{
+    color: var(--gold-soft);
+    font-size: 0.9rem;
+  }
+  .rule-block p, .rule-block li{
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+  .rule-block ul, .rule-block ol{
+    padding-left: 1.3em;
+    margin: 12px 0 0;
+  }
+  .rule-block li{ margin-bottom: 8px; }
+  .stat-row{
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .stat-row .stat{
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 14px 18px;
+    min-width: 130px;
+    background: var(--bg-panel);
+  }
+  .stat-row .stat .n{
+    font-family: 'Shippori Mincho', serif;
+    color: var(--gold);
+    font-size: 1.3rem;
+    display: block;
+  }
+  .stat-row .stat .l{
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  /* ---------- cards page ---------- */
+  .auth-bar{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .auth-bar #auth-status{ color: var(--text-dim); }
+
+  .card-toolbar #card-search{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 9px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.88rem;
+    min-width: 220px;
+  }
+  .card-toolbar #card-search:focus{ border-color: var(--gold-soft); }
+  .card-toolbar #card-search::placeholder{ color: var(--text-dim); }
+
+  .card-toolbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .card-toolbar .count{
+    color: var(--text-dim);
+    font-size: 0.88rem;
+  }
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gold);
+    color: #1a1523;
+    border: none;
+    padding: 11px 20px;
+    border-radius: 3px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .btn:hover{ background: #ddb75c; transform: translateY(-1px); }
+  .btn.secondary{
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+  }
+  .btn.secondary:hover{ color: var(--text); border-color: var(--gold-soft); background: transparent; }
+
+  .card-form{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 28px;
+    margin-bottom: 46px;
+  }
+  .card-form h3{
+    margin: 0 0 20px;
+    font-size: 1.1rem;
+  }
+  .form-grid{
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 22px;
+  }
+  @media (max-width: 700px){ .form-grid{ grid-template-columns: 1fr; } }
+
+  .field{ margin-bottom: 16px; }
+  .field:last-child{ margin-bottom: 0; }
+  .field label{
+    display: block;
+    font-size: 0.8rem;
+    color: var(--gold-soft);
+    margin-bottom: 6px;
+  }
+  .field input[type="text"],
+  .field textarea{
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.92rem;
+    resize: vertical;
+  }
+  .field input[type="text"]:focus,
+  .field textarea:focus{ border-color: var(--gold-soft); }
+  .field textarea{ min-height: 88px; }
+
+  .image-drop{
+    border: 1px dashed var(--line);
+    border-radius: 4px;
+    aspect-ratio: 3/4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    text-align: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg);
+  }
+  .image-drop img{
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .image-drop input[type="file"]{
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer;
+  }
+
+  .form-actions{
+    margin-top: 22px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .form-msg{
+    font-size: 0.82rem;
+    color: var(--crimson);
+  }
+  .form-msg.ok{ color: var(--gold); }
+
+  .card-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 22px;
+  }
+  .card-empty{
+    color: var(--text-dim);
+    border: 1px dashed var(--line);
+    border-radius: 4px;
+    padding: 50px 20px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .gcard{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color 0.2s ease;
+  }
+  .gcard:hover{ border-color: var(--gold-soft); }
+  .gcard .thumb{
+    aspect-ratio: 3/4;
+    background: var(--bg-panel-2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    overflow: hidden;
+  }
+  .gcard .thumb img{ width: 100%; height: 100%; object-fit: cover; }
+  .gcard .body{
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+  .gcard h4{
+    margin: 0;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 1.02rem;
+    color: var(--gold);
+  }
+  .gcard .txt{
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    flex: 1;
+    white-space: pre-wrap;
+  }
+  .gcard .illus{
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    border-top: 1px solid var(--line-soft);
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .gcard .del{
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.72rem;
+    padding: 0;
+  }
+  .gcard .del:hover{ color: var(--crimson); }
+
+  /* ---------- credits page ---------- */
+  .credit-list{
+    display: grid;
+    gap: 0;
+  }
+  .credit-row{
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  @media (max-width: 600px){
+    .credit-row{ grid-template-columns: 1fr; gap: 4px; }
+  }
+  .credit-row .role{
+    color: var(--gold-soft);
+    font-size: 0.85rem;
+  }
+  .credit-row .who{
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  .credit-note{
+    margin-top: 40px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.9;
+  }
+
+  footer.site{
+    border-top: 1px solid var(--line-soft);
+    padding: 26px 0;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+  }
+</style>
 </head>
-
 <body>
 
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#home" data-nav="home">
+      <span class="mark"></span>
+      幻想弾幕ブレイカーズ
+    </a>
+    <nav class="main">
+      <a href="#team" data-nav="team">サークル紹介</a>
+      <a href="#rules" data-nav="rules">ゲームルール</a>
+      <a href="#cards" data-nav="cards">カード紹介</a>
+      <a href="#credits" data-nav="credits">クレジット</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- HOME -->
+  <section id="page-home" class="page">
+    <div class="wrap">
+      <div class="hero">
+        <div class="eyebrow-art"><span></span><span></span><span></span></div>
+        <h1>ゲンリプ界隈に<br>新たな<em>風</em>を(´；ω；｀)w。</h1>
+        <p class="lead">「幻想弾幕ブレイカーズ」は、公認二次創作ゲーム「東方幻想エクリプス」から着想を得た全く新しいカードゲームです。制作チーム、ルール、カードの一覧をこのサイトでご案内します。</p>
+        <a href="#" id="reserve-btn" class="btn" target="_blank" rel="noopener" style="display:none; margin-top:28px;">試遊のご予約はこちら</a>
+      </div>
+
+      <div class="tiles">
+        <a class="tile" href="#team" data-nav="team">
+          <span class="corner"></span>
+          <span class="num">01</span>
+          <h3>サークル紹介</h3>
+          <p>サークルのメンバーとその役割を紹介します。</p>
+        </a>
+        <a class="tile" href="#rules" data-nav="rules">
+          <span class="corner"></span>
+          <span class="num">02</span>
+          <h3>ゲームルール</h3>
+          <p>準備からターンの流れ、勝利条件までを解説します。</p>
+        </a>
+        <a class="tile" href="#cards" data-nav="cards">
+          <span class="corner"></span>
+          <span class="num">03</span>
+          <h3>カード紹介</h3>
+          <p>登場するカードを掲載。このページから新しいカードを追加できます。</p>
+        </a>
+        <a class="tile" href="#credits" data-nav="credits">
+          <span class="corner"></span>
+          <span class="num">04</span>
+          <h3>クレジット</h3>
+          <p>制作に関わった全ての方々への謝辞です。</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="page-team" class="page">
+    <div class="page-head">
+      <div class="wrap">
+        <p class="tag">01 — TEAM</p>
+        <h2>制作チーム</h2>
+        <p>「幻想弾幕ブレイカーズ」は、以下のメンバーによって制作されています。</p>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="team-grid">
+        <div class="member">
+          <div class="avatar"></div>
+          <div>
+            <h3>三級天人</h3>
+            <p class="role">サークル代表</p>
+            <p class="bio">世界観とルール全体の設計を担当。プレイテストの取りまとめも行っています。</p>
+          </div>
+        </div>
+        <div class="member">
+          <div class="avatar"></div>
+          <div>
+            <h3>朝倉 灯</h3>
+            <p class="role">リードイラストレーター</p>
+            <p class="bio">カードイラストの多くを手掛け、作品全体のビジュアルトーンを統一しています。</p>
+          </div>
+        </div>
+        <div class="member">
+          <div class="avatar"></div>
+          <div>
+            <h3>逢坂 陽菜</h3>
+            <p class="role">カードバランス調整</p>
+            <p class="bio">数値設計と対戦データの分析を担当し、環境の健全性を保っています。</p>
+          </div>
+        </div>
+        <div class="member">
+          <div class="avatar"></div>
+          <div>
+            <h3>桐生 匠</h3>
+            <p class="role">グラフィック / Web制作</p>
+            <p class="bio">カードのレイアウトデザインと、このサイトの実装を担当しています。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RULES -->
+  <section id="page-rules" class="page">
+    <div class="page-head">
+      <div class="wrap">
+        <p class="tag">02 — RULES</p>
+        <h2>ゲームルール</h2>
+        <p>基本的な進行ルールをまとめています。細かなカードテキストは、各カードの効果を優先してください。</p>
+      </div>
+    </div>
+    <div class="wrap">
+
+      <div class="rule-block">
+        <h3><span class="idx">概要</span>ゲームの目的</h3>
+        <p>「幻想弾幕ブレイカーズ」は、自分だけのデッキを組み、相手プレイヤーの「命脈(ライフ)」を0にすることを目指す1対1の対戦カードゲームです。</p>
+        <div class="stat-row">
+          <div class="stat"><span class="n">2人</span><span class="l">プレイ人数</span></div>
+          <div class="stat"><span class="n">40枚</span><span class="l">デッキ枚数</span></div>
+          <div class="stat"><span class="n">20</span><span class="l">初期ライフ</span></div>
+          <div class="stat"><span class="n">15〜30分</span><span class="l">プレイ時間目安</span></div>
+        </div>
+      </div>
+
+      <div class="rule-block">
+        <h3><span class="idx">準備</span>ゲームの準備</h3>
+        <ol>
+          <li>各プレイヤーは40枚のデッキを用意し、よくシャッフルします。</li>
+          <li>デッキから5枚を引き、初期手札とします。</li>
+          <li>じゃんけん等で先攻・後攻を決めます。後攻は追加で1枚引けます。</li>
+        </ol>
+      </div>
+
+      <div class="rule-block">
+        <h3><span class="idx">進行</span>ターンの流れ</h3>
+        <ol>
+          <li><strong>アルカナフェイズ</strong> — 場に「アルカナ(資源)」を1枚追加します。</li>
+          <li><strong>ドローフェイズ</strong> — デッキの一番上から1枚引きます。</li>
+          <li><strong>メインフェイズ</strong> — 手札のカードをアルカナを消費してプレイします。</li>
+          <li><strong>戦闘フェイズ</strong> — 場に出したユニットで相手を攻撃します。</li>
+          <li><strong>エンドフェイズ</strong> — 手札上限(7枚)を超えている場合は捨てます。</li>
+        </ol>
+      </div>
+
+      <div class="rule-block">
+        <h3><span class="idx">勝敗</span>勝利条件</h3>
+        <ul>
+          <li>相手の命脈が0以下になった時点で勝利します。</li>
+          <li>相手がデッキからカードを引けなくなった場合も勝利となります。</li>
+          <li>一部のカードには、上記以外の特殊な勝利条件が設定されている場合があります。カードテキストを優先してください。</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CARDS -->
+  <section id="page-cards" class="page">
+    <div class="page-head">
+      <div class="wrap">
+        <p class="tag">03 — CARDS</p>
+        <h2>カード紹介</h2>
+        <p>登場するカードの一覧です。掲載中のカードは開発段階のものであり、実際のカードとは異なる場合がございます。ご了承ください。</p>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="auth-bar" id="auth-bar">
+        <span id="auth-status" class="count">読み込み中…</span>
+        <button type="button" class="btn secondary" id="login-btn" style="display:none;">管理者はログインしてください</button>
+        <button type="button" class="btn secondary" id="logout-btn" style="display:none;">ログアウト</button>
+      </div>
+
+      <div class="card-form" id="card-form-wrap" style="display:none;">
+        <h3>新しいカードを追加</h3>
+        <form id="card-form">
+          <div class="form-grid">
+            <div class="field">
+              <label for="card-image">カード画像</label>
+              <div class="image-drop" id="image-drop">
+                <span id="image-drop-label">クリックして画像を選択</span>
+                <img id="image-preview" alt="" style="display:none;">
+                <input type="file" id="card-image" accept="image/*">
+              </div>
+            </div>
+            <div>
+              <div class="field">
+                <label for="card-name">カード名</label>
+                <input type="text" id="card-name" placeholder="例：黄昏の見張り" required>
+              </div>
+              <div class="field">
+                <label for="card-text">カードテキスト</label>
+                <textarea id="card-text" placeholder="カードの効果や説明文を入力してください"></textarea>
+              </div>
+              <div class="field">
+                <label for="card-illustrator">イラストレーター</label>
+                <input type="text" id="card-illustrator" placeholder="例：朝倉 灯">
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn">カードを追加</button>
+            <span class="form-msg" id="form-msg"></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="card-toolbar">
+        <span class="count" id="card-count">0枚のカードを掲載中</span>
+        <input type="text" id="card-search" placeholder="カード名で検索" aria-label="カード名で検索">
+      </div>
+
+      <div class="card-grid" id="card-grid"></div>
+    </div>
+  </section>
+
+  <!-- CREDITS -->
+  <section id="page-credits" class="page">
+    <div class="page-head">
+      <div class="wrap">
+        <p class="tag">04 — CREDITS</p>
+        <h2>クレジット</h2>
+        <p>「幻想弾幕ブレイカーズ」の制作にご協力いただいた皆様です。</p>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="credit-list">
+        <div class="credit-row"><span class="role">サークル代表</span><span class="who">三級天人</span></div>
+        <div class="credit-row"><span class="role">開発</span><span class="who">ko-1 / じょ / れんきょー</span></div>
+        <div class="credit-row"><span class="role">イラスト</span><span class="who"></span></div>
+        <div class="credit-row"><span class="role">プレイテスト</span><span class="who">運営陣一同</span></div>
+      </div>
+      <p class="credit-note">
+        本サイトに掲載されているカード名・イラスト・テキストはすべてサンプルです。<br>
+        © 幻想弾幕ブレイカーズ制作委員会 All Rights Reserved.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">幻想弾幕ブレイカーズ 公式サイト</div>
+</footer>
+
+<script>
+(function(){
+  /* ---------------------------------------------------------------------
+     予約リンクの設定
+     ここに予約フォーム・BOOTH予約ページなどのURLを入れると、トップページに
+     「ご予約はこちら」ボタンが表示されます。空のままなら非表示になります。
+     --------------------------------------------------------------------- */
+  var RESERVATION_URL = "https://livepocket.jp/e/eq2j0?utm_campaign=1119470&utm_content=evt&utm_medium=social&utm_source=COPY"; // 例: "https://booth.pm/ja/items/xxxxxxx"
+
+  var reserveBtn = document.getElementById("reserve-btn");
+  if(reserveBtn && RESERVATION_URL){
+    reserveBtn.href = RESERVATION_URL;
+    reserveBtn.style.display = "inline-flex";
+  }
+
+  var pages = ["home","team","rules","cards","credits"];
+  var navLinks = document.querySelectorAll('[data-nav]');
+
+  function showPage(name){
+    if(pages.indexOf(name) === -1) name = "home";
+    pages.forEach(function(p){
+      var el = document.getElementById("page-" + p);
+      if(el) el.classList.toggle("visible", p === name);
+    });
+    navLinks.forEach(function(a){
+      a.classList.toggle("active", a.getAttribute("data-nav") === name);
+    });
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  function routeFromHash(){
+    var name = (location.hash || "#home").replace("#", "");
+    showPage(name);
+  }
+
+  window.addEventListener("hashchange", routeFromHash);
+  routeFromHash();
+
+})();
+</script>
+
+<script type="module">
+/* =========================================================================
+   カード紹介：Firebase（Firestore + Google認証）による共有カード機能
+   ---------------------------------------------------------------------
+   セットアップ手順（チャットでも案内しています）
+   1. https://console.firebase.google.com で新しいプロジェクトを作成
+   2. 「Authentication」→ Sign-in method →「Google」を有効化
+   3. 「Firestore Database」を本番モードで作成
+   4. Firestoreの「ルール」タブに、このファイル末尾のセキュリティルール例
+      をそのまま貼り付けて公開（write を ADMIN_EMAILS と同じ一覧に限定）
+   5. プロジェクト設定 →「マイアプリ」→ ウェブアプリを追加し、表示された
+      設定オブジェクトを下の firebaseConfig にそのまま貼り付け
+   6. ADMIN_EMAILS に、カードを追加できる制作チームのGoogleメールアドレス
+      を追加（Firestoreルール側にも同じ一覧を書くのを忘れずに）
+   7. このHTMLファイルを好きな場所（Firebase Hosting、Netlify、社内サーバー
+      など）にアップロードして公開
+   ========================================================================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBizJz_jieF6LDmVwzGz4sKGYOFY4oop00",
+  authDomain: "genbure-b7b7a.firebaseapp.com",
+  projectId: "genbure-b7b7a",
+  storageBucket: "genbure-b7b7a.firebasestorage.app",
+  messagingSenderId: "431541796070",
+  appId: "1:431541796070:web:d9cd38ee8038388bb2cf27",
+  measurementId: "G-PG8LQQLWS2"
+};
+
+// カードを追加・削除できる制作チームのメールアドレス一覧。
+// ここに書いた一覧は「画面上の表示」を切り替えるだけです。
+// 実際の書き込み制限は、Firestoreのセキュリティルール側の一覧で行ってください。
+const ADMIN_EMAILS = [
+  "koifura497@gamil.com"
+];
+
+const isConfigured = firebaseConfig.apiKey && firebaseConfig.apiKey.indexOf("YOUR_") !== 0;
+
+const grid = document.getElementById("card-grid");
+const countLabel = document.getElementById("card-count");
+const formWrap = document.getElementById("card-form-wrap");
+const noAccessNote = document.getElementById("no-access-note");
+const configWarning = document.getElementById("config-warning");
+const authBar = document.getElementById("auth-bar");
+const authStatus = document.getElementById("auth-status");
+const loginBtn = document.getElementById("login-btn");
+const logoutBtn = document.getElementById("logout-btn");
+const form = document.getElementById("card-form");
+const msg = document.getElementById("form-msg");
+const imageInput = document.getElementById("card-image");
+const imagePreview = document.getElementById("image-preview");
+const imageDropLabel = document.getElementById("image-drop-label");
+const searchInput = document.getElementById("card-search");
+
+let pendingFile = null;
+let currentUser = null;
+let isAdmin = false;
+let lastCards = [];
+let searchTerm = "";
+
+function escapeHtml(str){
+  const div = document.createElement("div");
+  div.textContent = str == null ? "" : str;
+  return div.innerHTML;
+}
+
+function setCards(cards){
+  lastCards = cards;
+  renderFiltered();
+}
+
+function renderFiltered(){
+  const term = searchTerm.trim().toLowerCase();
+  const filtered = term
+    ? lastCards.filter(function(c){ return (c.name || "").toLowerCase().indexOf(term) !== -1; })
+    : lastCards;
+  renderCards(filtered, term ? lastCards.length : null);
+}
+
+function renderCards(cards, totalCount){
+  countLabel.textContent = totalCount == null
+    ? (cards.length + "枚のカードを掲載中")
+    : (cards.length + "件ヒット（全" + totalCount + "枚中）");
+  if(cards.length === 0){
+    grid.innerHTML = '<div class="card-empty">' +
+      (searchTerm.trim()
+        ? "「" + escapeHtml(searchTerm.trim()) + "」に一致するカードは見つかりませんでした。"
+        : "まだカードが登録されていません。" + (isAdmin ? '上のフォームから追加してください。' : '')) +
+      '</div>';
+    return;
+  }
+  grid.innerHTML = cards.map(function(card){
+    const thumb = card.imageDataUrl
+      ? '<img src="' + card.imageDataUrl + '" alt="' + escapeHtml(card.name) + '">'
+      : '画像なし';
+    const delBtn = isAdmin
+      ? '<button type="button" class="del" data-id="' + card.id + '">削除</button>'
+      : '';
+    return (
+      '<div class="gcard" data-id="' + card.id + '">' +
+        '<div class="thumb">' + thumb + '</div>' +
+        '<div class="body">' +
+          '<h4>' + escapeHtml(card.name || "無題のカード") + '</h4>' +
+          '<div class="txt">' + escapeHtml(card.text || "") + '</div>' +
+          '<div class="illus">' +
+            '<span>' + (card.illustrator ? "illust. " + escapeHtml(card.illustrator) : "") + '</span>' +
+            delBtn +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join("");
+}
+
+if(searchInput){
+  searchInput.addEventListener("input", function(){
+    searchTerm = searchInput.value;
+    renderFiltered();
+  });
+}
+
+function resizeImage(file, maxDimension, quality){
+  return new Promise(function(resolve, reject){
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = function(){
+      img.onload = function(){
+        let w = img.width, h = img.height;
+        if(w > h && w > maxDimension){ h = Math.round(h * maxDimension / w); w = maxDimension; }
+        else if(h > maxDimension){ w = Math.round(w * maxDimension / h); h = maxDimension; }
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+if(!isConfigured){
+  if(configWarning) configWarning.style.display = "block";
+  if(authBar) authBar.style.display = "none";
+  if(noAccessNote) noAccessNote.style.display = "none";
+  countLabel.textContent = "0枚のカードを掲載中";
+  grid.innerHTML = '<div class="card-empty">Firebaseの設定が完了すると、ここにカード一覧が表示されます。</div>';
+} else {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js");
+  const {
+    getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+  } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js");
+  const {
+    getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp
+  } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const dbFs = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  function updateAuthUI(){
+    if(currentUser){
+      authStatus.textContent = "ログイン中：" + (currentUser.email || currentUser.displayName || "");
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline-flex";
+    } else {
+      authStatus.textContent = "ログインしていません";
+      loginBtn.style.display = "inline-flex";
+      logoutBtn.style.display = "none";
+    }
+    formWrap.style.display = isAdmin ? "block" : "none";
+    noAccessNote.style.display = isAdmin ? "none" : "block";
+    renderFiltered();
+  }
+
+  loginBtn.addEventListener("click", function(){
+    signInWithPopup(auth, provider).catch(function(err){
+      console.error("ログインに失敗しました", err);
+    });
+  });
+
+  logoutBtn.addEventListener("click", function(){
+    signOut(auth).catch(function(err){ console.error("ログアウトに失敗しました", err); });
+  });
+
+  onAuthStateChanged(auth, function(user){
+    currentUser = user;
+    isAdmin = !!user && !!user.email && ADMIN_EMAILS.indexOf(user.email) !== -1;
+    updateAuthUI();
+  });
+
+  grid.addEventListener("click", async function(e){
+    const btn = e.target.closest(".del");
+    if(!btn || !isAdmin) return;
+    try{
+      await deleteDoc(doc(dbFs, "cards", btn.getAttribute("data-id")));
+    }catch(err){
+      console.error("カードの削除に失敗しました", err);
+      alert("削除に失敗しました。Firestoreのセキュリティルールをご確認ください。");
+    }
+  });
+
+  if(imageInput){
+    imageInput.addEventListener("change", function(){
+      const file = imageInput.files && imageInput.files[0];
+      if(!file) return;
+      pendingFile = file;
+      const reader = new FileReader();
+      reader.onload = function(){
+        imagePreview.src = reader.result;
+        imagePreview.style.display = "block";
+        imageDropLabel.style.display = "none";
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if(form){
+    form.addEventListener("submit", async function(e){
+      e.preventDefault();
+      if(!isAdmin){
+        msg.textContent = "カードの追加はログインした制作チームのメンバーのみ行えます。";
+        msg.classList.remove("ok");
+        return;
+      }
+      const name = document.getElementById("card-name").value.trim();
+      const text = document.getElementById("card-text").value.trim();
+      const illustrator = document.getElementById("card-illustrator").value.trim();
+
+      if(!name){
+        msg.textContent = "カード名を入力してください。";
+        msg.classList.remove("ok");
+        return;
+      }
+
+      msg.textContent = "追加しています…";
+      msg.classList.remove("ok");
+
+      try{
+        let imageDataUrl = null;
+        if(pendingFile){
+          imageDataUrl = await resizeImage(pendingFile, 800, 0.78);
+        }
+        await addDoc(collection(dbFs, "cards"), {
+          name: name,
+          text: text,
+          illustrator: illustrator,
+          imageDataUrl: imageDataUrl,
+          authorEmail: currentUser ? currentUser.email : null,
+          createdAt: serverTimestamp()
+        });
+
+        form.reset();
+        pendingFile = null;
+        imagePreview.src = "";
+        imagePreview.style.display = "none";
+        imageDropLabel.style.display = "block";
+        msg.textContent = "カードを追加しました。全員の画面に反映されます。";
+        msg.classList.add("ok");
+      }catch(err){
+        console.error("カードの追加に失敗しました", err);
+        msg.textContent = "追加に失敗しました。Firestoreのセキュリティルールと接続設定をご確認ください。";
+        msg.classList.remove("ok");
+      }
+    });
+  }
+
+  const cardsQuery = query(collection(dbFs, "cards"), orderBy("createdAt", "desc"));
+  onSnapshot(cardsQuery, function(snap){
+    const cards = snap.docs.map(function(d){
+      return Object.assign({ id: d.id }, d.data());
+    });
+    setCards(cards);
+  }, function(err){
+    console.error("カード一覧の取得に失敗しました", err);
+    grid.innerHTML = '<div class="card-empty">カード一覧を読み込めませんでした。Firestoreの設定をご確認ください。</div>';
+  });
+}
+
+/*
+Firestore セキュリティルールの例（Firebaseコンソール → Firestore Database →
+ルール タブに貼り付けてください。ADMIN_EMAILS と必ず同じ一覧にすること）:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /cards/{cardId} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+        request.auth.token.email in [
+          "member1@example.com",
+          "member2@example.com"
+        ];
+    }
+  }
+}
+*/
+</script>
+
 </body>
-
-
-<script type="text/javascript"></script>
-<script src = js/system.js ></script>
+</html>
