@@ -385,6 +385,11 @@
     border: 1px solid var(--line);
   }
   .btn.secondary:hover{ color: var(--text); border-color: var(--gold-soft); background: transparent; }
+  .btn.danger{
+    background: var(--crimson);
+    color: #fff;
+  }
+  .btn.danger:hover{ background: #a3384b; }
 
   .card-form{
     background: var(--bg-panel);
@@ -399,7 +404,7 @@
   }
   .form-grid{
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 220px 1fr;
     gap: 22px;
   }
   @media (max-width: 700px){ .form-grid{ grid-template-columns: 1fr; } }
@@ -428,6 +433,20 @@
   .field textarea:focus{ border-color: var(--gold-soft); }
   .field textarea{ min-height: 88px; }
 
+  .radio-group{
+    display: flex;
+    gap: 16px;
+    margin-top: 6px;
+  }
+  .radio-group label{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text);
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+
   .image-drop{
     border: 1px dashed var(--line);
     border-radius: 4px;
@@ -444,11 +463,15 @@
     overflow: hidden;
     position: relative;
     background: var(--bg);
+    transition: aspect-ratio 0.25s ease;
+  }
+  .image-drop.landscape{
+    aspect-ratio: 4/3;
   }
   .image-drop img{
     position: absolute; inset: 0;
     width: 100%; height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
   .image-drop input[type="file"]{
     position: absolute; inset: 0;
@@ -467,10 +490,12 @@
   }
   .form-msg.ok{ color: var(--gold); }
 
+  /* ---------- card grid & cards ---------- */
   .card-grid{
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 22px;
+    align-items: start;
   }
   .card-empty{
     color: var(--text-dim);
@@ -479,6 +504,7 @@
     padding: 50px 20px;
     text-align: center;
     font-size: 0.9rem;
+    grid-column: 1 / -1;
   }
 
   .gcard{
@@ -489,9 +515,14 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: border-color 0.2s ease;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .gcard:hover{ border-color: var(--gold-soft); }
+  .gcard:hover{
+    border-color: var(--gold-soft);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
   .gcard .thumb{
     aspect-ratio: 3/4;
     background: var(--bg-panel-2);
@@ -500,44 +531,128 @@
     font-size: 0.75rem;
     overflow: hidden;
   }
-  .gcard .thumb img{ width: 100%; height: 100%; object-fit: cover; }
+  .gcard.landscape .thumb{
+    aspect-ratio: 4/3;
+  }
+  .gcard .thumb img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .gcard .body{
-    padding: 14px 16px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
+    padding: 12px 14px;
+    text-align: center;
+    background: var(--bg-panel);
   }
   .gcard h4{
     margin: 0;
     font-family: 'Shippori Mincho', serif;
-    font-size: 1.02rem;
+    font-size: 0.98rem;
     color: var(--gold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .gcard .txt{
-    font-size: 0.82rem;
-    color: var(--text-dim);
-    flex: 1;
-    white-space: pre-wrap;
-  }
-  .gcard .illus{
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    border-top: 1px solid var(--line-soft);
-    padding-top: 8px;
+
+  /* ---------- card modal ---------- */
+  .modal-backdrop{
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 8, 15, 0.82);
+    backdrop-filter: blur(6px);
+    z-index: 100;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: fadein 0.2s ease;
   }
-  .gcard .del{
+  .modal-content{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 820px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 32px;
+    box-shadow: var(--shadow);
+  }
+  .modal-close{
+    position: absolute;
+    top: 16px;
+    right: 20px;
     background: none;
     border: none;
     color: var(--text-dim);
+    font-size: 1.8rem;
     cursor: pointer;
-    font-size: 0.72rem;
-    padding: 0;
+    line-height: 1;
+    padding: 4px;
   }
-  .gcard .del:hover{ color: var(--crimson); }
+  .modal-close:hover{ color: var(--text); }
+  .modal-body{
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+  }
+  @media (max-width: 680px){
+    .modal-body{
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  .modal-img-wrap{
+    flex-shrink: 0;
+    width: 300px;
+    max-width: 100%;
+    background: var(--bg-panel-2);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-img-wrap.landscape{
+    width: 380px;
+  }
+  .modal-img-wrap img{
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+  .modal-info{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+  .modal-info h3{
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--gold);
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 10px;
+  }
+  .modal-text{
+    font-size: 0.94rem;
+    color: var(--text);
+    white-space: pre-wrap;
+    line-height: 1.7;
+    background: var(--bg);
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--line-soft);
+    min-height: 100px;
+  }
+  .modal-illus{
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
 
   /* ---------- credits page ---------- */
   .credit-list{
@@ -757,12 +872,21 @@
         <h3>新しいカードを追加</h3>
         <form id="card-form">
           <div class="form-grid">
-            <div class="field">
-              <label for="card-image">カード画像</label>
-              <div class="image-drop" id="image-drop">
-                <span id="image-drop-label">クリックして画像を選択</span>
-                <img id="image-preview" alt="" style="display:none;">
-                <input type="file" id="card-image" accept="image/*">
+            <div>
+              <div class="field">
+                <label>カードの向き</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="card-orientation" value="portrait" checked> 縦向き</label>
+                  <label><input type="radio" name="card-orientation" value="landscape"> 横向き</label>
+                </div>
+              </div>
+              <div class="field">
+                <label for="card-image">カード画像</label>
+                <div class="image-drop" id="image-drop">
+                  <span id="image-drop-label">クリックして画像を選択</span>
+                  <img id="image-preview" alt="" style="display:none;">
+                  <input type="file" id="card-image" accept="image/*">
+                </div>
               </div>
             </div>
             <div>
@@ -821,18 +945,31 @@
 
 </main>
 
+<!-- CARD DETAIL MODAL -->
+<div id="card-modal" class="modal-backdrop" style="display:none;">
+  <div class="modal-content">
+    <button type="button" class="modal-close" id="modal-close" aria-label="閉じる">&times;</button>
+    <div class="modal-body">
+      <div class="modal-img-wrap" id="modal-img-wrap">
+        <img id="modal-img" src="" alt="">
+      </div>
+      <div class="modal-info">
+        <h3 id="modal-title"></h3>
+        <div id="modal-text" class="modal-text"></div>
+        <div id="modal-illustrator" class="modal-illus"></div>
+        <div id="modal-actions" style="margin-top: auto; padding-top: 10px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer class="site">
   <div class="wrap">幻想弾幕ブレイカーズ 公式サイト</div>
 </footer>
 
 <script>
 (function(){
-  /* ---------------------------------------------------------------------
-     予約リンクの設定
-     ここに予約フォーム・BOOTH予約ページなどのURLを入れると、トップページに
-     「ご予約はこちら」ボタンが表示されます。空のままなら非表示になります。
-     --------------------------------------------------------------------- */
-  var RESERVATION_URL = "https://livepocket.jp/e/eq2j0?utm_campaign=1119470&utm_content=evt&utm_medium=social&utm_source=COPY"; // 例: "https://booth.pm/ja/items/xxxxxxx"
+  var RESERVATION_URL = "https://livepocket.jp/e/eq2j0?utm_campaign=1119470&utm_content=evt&utm_medium=social&utm_source=COPY";
 
   var reserveBtn = document.getElementById("reserve-btn");
   if(reserveBtn && RESERVATION_URL){
@@ -867,23 +1004,6 @@
 </script>
 
 <script type="module">
-/* =========================================================================
-   カード紹介：Firebase（Firestore + Google認証）による共有カード機能
-   ---------------------------------------------------------------------
-   セットアップ手順（チャットでも案内しています）
-   1. https://console.firebase.google.com で新しいプロジェクトを作成
-   2. 「Authentication」→ Sign-in method →「Google」を有効化
-   3. 「Firestore Database」を本番モードで作成
-   4. Firestoreの「ルール」タブに、このファイル末尾のセキュリティルール例
-      をそのまま貼り付けて公開（write を ADMIN_EMAILS と同じ一覧に限定）
-   5. プロジェクト設定 →「マイアプリ」→ ウェブアプリを追加し、表示された
-      設定オブジェクトを下の firebaseConfig にそのまま貼り付け
-   6. ADMIN_EMAILS に、カードを追加できる制作チームのGoogleメールアドレス
-      を追加（Firestoreルール側にも同じ一覧を書くのを忘れずに）
-   7. このHTMLファイルを好きな場所（Firebase Hosting、Netlify、社内サーバー
-      など）にアップロードして公開
-   ========================================================================= */
-
 const firebaseConfig = {
   apiKey: "AIzaSyBizJz_jieF6LDmVwzGz4sKGYOFY4oop00",
   authDomain: "genbure-b7b7a.firebaseapp.com",
@@ -894,9 +1014,6 @@ const firebaseConfig = {
   measurementId: "G-PG8LQQLWS2"
 };
 
-// カードを追加・削除できる制作チームのメールアドレス一覧。
-// ここに書いた一覧は「画面上の表示」を切り替えるだけです。
-// 実際の書き込み制限は、Firestoreのセキュリティルール側の一覧で行ってください。
 const ADMIN_EMAILS = [
   "koifura497@gmail.com"
 ];
@@ -917,13 +1034,25 @@ const msg = document.getElementById("form-msg");
 const imageInput = document.getElementById("card-image");
 const imagePreview = document.getElementById("image-preview");
 const imageDropLabel = document.getElementById("image-drop-label");
+const imageDrop = document.getElementById("image-drop");
 const searchInput = document.getElementById("card-search");
+
+// モーダル要素
+const cardModal = document.getElementById("card-modal");
+const modalClose = document.getElementById("modal-close");
+const modalImgWrap = document.getElementById("modal-img-wrap");
+const modalImg = document.getElementById("modal-img");
+const modalTitle = document.getElementById("modal-title");
+const modalText = document.getElementById("modal-text");
+const modalIllustrator = document.getElementById("modal-illustrator");
+const modalActions = document.getElementById("modal-actions");
 
 let pendingFile = null;
 let currentUser = null;
 let isAdmin = false;
 let lastCards = [];
 let searchTerm = "";
+let activeCardId = null;
 
 function escapeHtml(str){
   const div = document.createElement("div");
@@ -957,22 +1086,15 @@ function renderCards(cards, totalCount){
     return;
   }
   grid.innerHTML = cards.map(function(card){
+    const isLandscape = card.orientation === "landscape";
     const thumb = card.imageDataUrl
       ? '<img src="' + card.imageDataUrl + '" alt="' + escapeHtml(card.name) + '">'
       : '画像なし';
-    const delBtn = isAdmin
-      ? '<button type="button" class="del" data-id="' + card.id + '">削除</button>'
-      : '';
     return (
-      '<div class="gcard" data-id="' + card.id + '">' +
+      '<div class="gcard ' + (isLandscape ? 'landscape' : '') + '" data-id="' + card.id + '">' +
         '<div class="thumb">' + thumb + '</div>' +
         '<div class="body">' +
           '<h4>' + escapeHtml(card.name || "無題のカード") + '</h4>' +
-          '<div class="txt">' + escapeHtml(card.text || "") + '</div>' +
-          '<div class="illus">' +
-            '<span>' + (card.illustrator ? "illust. " + escapeHtml(card.illustrator) : "") + '</span>' +
-            delBtn +
-          '</div>' +
         '</div>' +
       '</div>'
     );
@@ -985,6 +1107,16 @@ if(searchInput){
     renderFiltered();
   });
 }
+
+// 縦横向きラジオボタン切り替え
+const orientationRadios = document.querySelectorAll('input[name="card-orientation"]');
+orientationRadios.forEach(function(radio){
+  radio.addEventListener("change", function(){
+    if(imageDrop){
+      imageDrop.classList.toggle("landscape", this.value === "landscape");
+    }
+  });
+});
 
 function resizeImage(file, maxDimension, quality){
   return new Promise(function(resolve, reject){
@@ -1008,6 +1140,55 @@ function resizeImage(file, maxDimension, quality){
   });
 }
 
+// モーダル操作関数
+function openCardModal(cardId){
+  const card = lastCards.find(c => c.id === cardId);
+  if(!card) return;
+
+  activeCardId = cardId;
+  const isLandscape = card.orientation === "landscape";
+
+  modalImgWrap.classList.toggle("landscape", isLandscape);
+  modalImg.src = card.imageDataUrl || "";
+  modalImg.alt = card.name || "";
+  modalTitle.textContent = card.name || "無題のカード";
+  modalText.textContent = card.text || "（テキストなし）";
+  modalIllustrator.textContent = card.illustrator ? "illust. " + card.illustrator : "";
+
+  if(isAdmin){
+    modalActions.innerHTML = '<button type="button" class="btn danger" id="modal-delete-btn">このカードを削除</button>';
+    const delBtn = document.getElementById("modal-delete-btn");
+    if(delBtn){
+      delBtn.addEventListener("click", async function(){
+        if(confirm("「" + (card.name || "このカード") + "」を削除してもよろしいですか？")){
+          deleteCard(card.id);
+        }
+      });
+    }
+  } else {
+    modalActions.innerHTML = '';
+  }
+
+  cardModal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+function closeCardModal(){
+  cardModal.style.display = "none";
+  document.body.style.overflow = "";
+  activeCardId = null;
+}
+
+modalClose.addEventListener("click", closeCardModal);
+cardModal.addEventListener("click", function(e){
+  if(e.target === cardModal) closeCardModal();
+});
+window.addEventListener("keydown", function(e){
+  if(e.key === "Escape" && cardModal.style.display === "flex") closeCardModal();
+});
+
+let deleteCard = function(){};
+
 if(!isConfigured){
   if(configWarning) configWarning.style.display = "block";
   if(authBar) authBar.style.display = "none";
@@ -1028,6 +1209,16 @@ if(!isConfigured){
   const dbFs = getFirestore(app);
   const provider = new GoogleAuthProvider();
 
+  deleteCard = async function(cardId){
+    try{
+      await deleteDoc(doc(dbFs, "cards", cardId));
+      closeCardModal();
+    }catch(err){
+      console.error("カードの削除に失敗しました", err);
+      alert("削除に失敗しました。Firestoreのセキュリティルールをご確認ください。");
+    }
+  };
+
   function updateAuthUI(){
     if(currentUser){
       authStatus.textContent = "ログイン中：" + (currentUser.email || currentUser.displayName || "");
@@ -1039,7 +1230,7 @@ if(!isConfigured){
       logoutBtn.style.display = "none";
     }
     formWrap.style.display = isAdmin ? "block" : "none";
-    noAccessNote.style.display = isAdmin ? "none" : "block";
+    if(noAccessNote) noAccessNote.style.display = isAdmin ? "none" : "block";
     renderFiltered();
   }
 
@@ -1059,15 +1250,10 @@ if(!isConfigured){
     updateAuthUI();
   });
 
-  grid.addEventListener("click", async function(e){
-    const btn = e.target.closest(".del");
-    if(!btn || !isAdmin) return;
-    try{
-      await deleteDoc(doc(dbFs, "cards", btn.getAttribute("data-id")));
-    }catch(err){
-      console.error("カードの削除に失敗しました", err);
-      alert("削除に失敗しました。Firestoreのセキュリティルールをご確認ください。");
-    }
+  grid.addEventListener("click", function(e){
+    const cardEl = e.target.closest(".gcard");
+    if(!cardEl) return;
+    openCardModal(cardEl.getAttribute("data-id"));
   });
 
   if(imageInput){
@@ -1096,6 +1282,7 @@ if(!isConfigured){
       const name = document.getElementById("card-name").value.trim();
       const text = document.getElementById("card-text").value.trim();
       const illustrator = document.getElementById("card-illustrator").value.trim();
+      const orientation = document.querySelector('input[name="card-orientation"]:checked').value;
 
       if(!name){
         msg.textContent = "カード名を入力してください。";
@@ -1115,6 +1302,7 @@ if(!isConfigured){
           name: name,
           text: text,
           illustrator: illustrator,
+          orientation: orientation,
           imageDataUrl: imageDataUrl,
           authorEmail: currentUser ? currentUser.email : null,
           createdAt: serverTimestamp()
@@ -1125,6 +1313,7 @@ if(!isConfigured){
         imagePreview.src = "";
         imagePreview.style.display = "none";
         imageDropLabel.style.display = "block";
+        imageDrop.classList.remove("landscape");
         msg.textContent = "カードを追加しました。全員の画面に反映されます。";
         msg.classList.add("ok");
       }catch(err){
@@ -1146,25 +1335,6 @@ if(!isConfigured){
     grid.innerHTML = '<div class="card-empty">カード一覧を読み込めませんでした。Firestoreの設定をご確認ください。</div>';
   });
 }
-
-/*
-Firestore セキュリティルールの例（Firebaseコンソール → Firestore Database →
-ルール タブに貼り付けてください。ADMIN_EMAILS と必ず同じ一覧にすること）:
-
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /cards/{cardId} {
-      allow read: if true;
-      allow write: if request.auth != null &&
-        request.auth.token.email in [
-          "member1@example.com",
-          "member2@example.com"
-        ];
-    }
-  }
-}
-*/
 </script>
 
 </body>
