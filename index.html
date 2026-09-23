@@ -379,6 +379,7 @@
     transition: background 0.2s ease, transform 0.15s ease;
   }
   .btn:hover{ background: #ddb75c; transform: translateY(-1px); }
+  .btn:disabled{ opacity: 0.6; cursor: not-allowed; transform: none; }
   .btn.secondary{
     background: transparent;
     color: var(--text-dim);
@@ -497,6 +498,19 @@
     gap: 22px;
     align-items: start;
   }
+  @media (max-width: 600px){
+    .card-grid{
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .gcard .body{
+      padding: 8px 10px;
+    }
+    .gcard h4{
+      font-size: 0.85rem;
+    }
+  }
+
   .card-empty{
     color: var(--text-dim);
     border: 1px dashed var(--line);
@@ -954,10 +968,35 @@
         <img id="modal-img" src="" alt="">
       </div>
       <div class="modal-info">
-        <h3 id="modal-title"></h3>
-        <div id="modal-text" class="modal-text"></div>
-        <div id="modal-illustrator" class="modal-illus"></div>
-        <div id="modal-actions" style="margin-top: auto; padding-top: 10px;"></div>
+        <!-- 閲覧モード -->
+        <div id="modal-view-mode">
+          <h3 id="modal-title"></h3>
+          <div id="modal-text" class="modal-text"></div>
+          <div id="modal-illustrator" class="modal-illus"></div>
+        </div>
+        <!-- 編集モード -->
+        <div id="modal-edit-mode" style="display:none;">
+          <div class="field">
+            <label for="edit-card-name">カード名</label>
+            <input type="text" id="edit-card-name">
+          </div>
+          <div class="field">
+            <label>カードの向き</label>
+            <div class="radio-group">
+              <label><input type="radio" name="edit-card-orientation" value="portrait"> 縦向き</label>
+              <label><input type="radio" name="edit-card-orientation" value="landscape"> 横向き</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="edit-card-text">カードテキスト</label>
+            <textarea id="edit-card-text" style="min-height: 120px;"></textarea>
+          </div>
+          <div class="field">
+            <label for="edit-card-illustrator">イラストレーター</label>
+            <input type="text" id="edit-card-illustrator">
+          </div>
+        </div>
+        <div id="modal-actions" style="margin-top: auto; padding-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"></div>
       </div>
     </div>
   </div>
@@ -1046,6 +1085,8 @@ const modalTitle = document.getElementById("modal-title");
 const modalText = document.getElementById("modal-text");
 const modalIllustrator = document.getElementById("modal-illustrator");
 const modalActions = document.getElementById("modal-actions");
+const modalViewMode = document.getElementById("modal-view-mode");
+const modalEditMode = document.getElementById("modal-edit-mode");
 
 let pendingFile = null;
 let currentUser = null;
@@ -1067,9 +1108,16 @@ function setCards(cards){
 
 function renderFiltered(){
   const term = searchTerm.trim().toLowerCase();
-  const filtered = term
+  let filtered = term
     ? lastCards.filter(function(c){ return (c.name || "").toLowerCase().indexOf(term) !== -1; })
-    : lastCards;
+    : lastCards.slice();
+
+  filtered.sort(function(a, b){
+    const aIsLandscape = a.orientation === "landscape" ? 1 : 0;
+    const bIsLandscape = b.orientation === "landscape" ? 1 : 0;
+    return aIsLandscape - bIsLandscape;
+  });
+
   renderCards(filtered, term ? lastCards.length : null);
 }
 
@@ -1108,7 +1156,6 @@ if(searchInput){
   });
 }
 
-// 縦横向きラジオボタン切り替え
 const orientationRadios = document.querySelectorAll('input[name="card-orientation"]');
 orientationRadios.forEach(function(radio){
   radio.addEventListener("change", function(){
@@ -1140,6 +1187,90 @@ function resizeImage(file, maxDimension, quality){
   });
 }
 
+// モーダル表示切り替え関数
+function switchModalMode(isEdit, card){
+  if(isEdit){
+    modalViewMode.style.display = "none";
+    modalEditMode.style.display = "block";
+
+    document.getElementById("edit-card-name").value = card.name || "";
+    document.getElementById("edit-card-text").value = card.text || "";
+    document.getElementById("edit-card-illustrator").value = card.illustrator || "";
+
+    const rads = document.querySelectorAll('input[name="edit-card-orientation"]');
+    rads.forEach(r => { r.checked = (r.value === (card.orientation || "portrait")); });
+
+    modalActions.innerHTML = 
+      '<button type="button" class="btn" id="modal-save-btn">保存する</button>' +
+      '<button type="button" class="btn secondary" id="modal-cancel-btn">キャンセル</button>';
+
+    document.getElementById("modal-save-btn").addEventListener("click", async function(){
+      const newName = document.getElementById("edit-card-name").value.trim();
+      const newText = document.getElementById("edit-card-text").value.trim();
+      const newIllustrator = document.getElementById("edit-card-illustrator").value.trim();
+      const newOrientation = document.querySelector('input[name="edit-card-orientation"]:checked').value;
+
+      if(!newName){
+        alert("カード名を入力してください。");
+        return;
+      }
+
+      const saveBtn = document.getElementById("modal-save-btn");
+      saveBtn.textContent = "保存中…";
+      saveBtn.disabled = true;
+
+      const success = await updateCard(card.id, {
+        name: newName,
+        text: newText,
+        illustrator: newIllustrator,
+        orientation: newOrientation
+      });
+
+      if(success){
+        card.name = newName;
+        card.text = newText;
+        card.illustrator = newIllustrator;
+        card.orientation = newOrientation;
+
+        modalImgWrap.classList.toggle("landscape", newOrientation === "landscape");
+        modalTitle.textContent = newName;
+        modalText.textContent = newText || "（テキストなし）";
+        modalIllustrator.textContent = newIllustrator ? "illust. " + newIllustrator : "";
+
+        switchModalMode(false, card);
+      } else {
+        saveBtn.textContent = "保存する";
+        saveBtn.disabled = false;
+      }
+    });
+
+    document.getElementById("modal-cancel-btn").addEventListener("click", function(){
+      switchModalMode(false, card);
+    });
+
+  } else {
+    modalViewMode.style.display = "block";
+    modalEditMode.style.display = "none";
+
+    if(isAdmin){
+      modalActions.innerHTML = 
+        '<button type="button" class="btn secondary" id="modal-edit-btn">編集</button>' +
+        '<button type="button" class="btn danger" id="modal-delete-btn">削除</button>';
+
+      document.getElementById("modal-edit-btn").addEventListener("click", function(){
+        switchModalMode(true, card);
+      });
+      document.getElementById("modal-delete-btn").addEventListener("click", async function(){
+        if(confirm("「" + (card.name || "このカード") + "」を削除してもよろしいですか？")){
+          deleteCard(card.id);
+        }
+      });
+    } else {
+      modalActions.innerHTML = '';
+    }
+  }
+}
+
 // モーダル操作関数
 function openCardModal(cardId){
   const card = lastCards.find(c => c.id === cardId);
@@ -1155,19 +1286,7 @@ function openCardModal(cardId){
   modalText.textContent = card.text || "（テキストなし）";
   modalIllustrator.textContent = card.illustrator ? "illust. " + card.illustrator : "";
 
-  if(isAdmin){
-    modalActions.innerHTML = '<button type="button" class="btn danger" id="modal-delete-btn">このカードを削除</button>';
-    const delBtn = document.getElementById("modal-delete-btn");
-    if(delBtn){
-      delBtn.addEventListener("click", async function(){
-        if(confirm("「" + (card.name || "このカード") + "」を削除してもよろしいですか？")){
-          deleteCard(card.id);
-        }
-      });
-    }
-  } else {
-    modalActions.innerHTML = '';
-  }
+  switchModalMode(false, card);
 
   cardModal.style.display = "flex";
   document.body.style.overflow = "hidden";
@@ -1188,6 +1307,7 @@ window.addEventListener("keydown", function(e){
 });
 
 let deleteCard = function(){};
+let updateCard = function(){};
 
 if(!isConfigured){
   if(configWarning) configWarning.style.display = "block";
@@ -1201,7 +1321,7 @@ if(!isConfigured){
     getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
   } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js");
   const {
-    getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp
+    getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, serverTimestamp
   } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
 
   const app = initializeApp(firebaseConfig);
@@ -1216,6 +1336,17 @@ if(!isConfigured){
     }catch(err){
       console.error("カードの削除に失敗しました", err);
       alert("削除に失敗しました。Firestoreのセキュリティルールをご確認ください。");
+    }
+  };
+
+  updateCard = async function(cardId, data){
+    try{
+      await updateDoc(doc(dbFs, "cards", cardId), data);
+      return true;
+    }catch(err){
+      console.error("カードの更新に失敗しました", err);
+      alert("更新に失敗しました。Firestoreのセキュリティルールをご確認ください。");
+      return false;
     }
   };
 
