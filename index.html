@@ -736,6 +736,7 @@
         <h1>ゲンリプ界隈に<br>新たな<em>風</em>を(´；ω；｀)w。</h1>
         <p class="lead">「幻想弾幕ブレイカーズ」は、公認二次創作ゲーム「東方幻想エクリプス」から着想を得た全く新しいカードゲームです。サークル紹介、ルール、カードの一覧をこのサイトでご案内します。</p>
         <a href="#" id="reserve-btn" class="btn" target="_blank" rel="noopener" style="display:none; margin-top:28px;">試遊のご予約はこちら</a>
+        <a href="#" id="osinagaki-btn" class="btn" target="_blank" rel="noopener" style="display:none; margin-top:28px;">例大祭のおしながきはこちら</a>
       </div>
 
       <div class="tiles">
@@ -1061,6 +1062,15 @@
   if(reserveBtn && RESERVATION_URL){
     reserveBtn.href = RESERVATION_URL;
     reserveBtn.style.display = "inline-flex";
+  }
+
+  function(){
+  var osinagaki_URL = "https://hamp.ai/product/ctlnr3czb2fi3iktmsl6vi9?circleid=genbure_tenko";
+
+  var osinagakiBtn = document.getElementById("osinagaki-btn");
+  if(osinagakieBtn && osinagaki_URL){
+    osinagakiBtn.href = osinagaki_URL;
+    osinagakiBtn.style.display = "inline-flex";
   }
 
   var pages = ["home","team","rules","cards","credits"];
